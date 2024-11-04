@@ -3,6 +3,7 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats
+import requests
 
 # 設定中文字體
 plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei']  # 可換成其他支援中文的字體
@@ -22,7 +23,7 @@ for ticker in tickers:
     combined_data[f'{ticker}_30MA'] = combined_data[f'{ticker}_Close'].rolling(window=30).mean()
     combined_data[f'{ticker}_90MA'] = combined_data[f'{ticker}_Close'].rolling(window=90).mean()
     combined_data[f'{ticker}_Returns'] = combined_data[f'{ticker}_Close'].pct_change()
-    
+
 # 將數據保存為CSV檔案
 combined_data.to_csv('stock_data.csv')
 
@@ -34,6 +35,45 @@ numeric_data = combined_data.select_dtypes(include='number')
 z_scores = stats.zscore(numeric_data)
 filtered_entries = (abs(z_scores) < 3).all(axis=1)
 cleaned_data = combined_data[filtered_entries]
+
+# # 加入 P/E Ratio 的計算
+# api_key = '3INE4PH7GN9PIBCA'  # 請替換成你的 Alpha Vantage API 金鑰
+# eps_data = {}
+
+# for ticker in tickers:
+#     # Alpha Vantage API URL
+#     url = f'https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol={ticker}&apikey={api_key}'
+#     response = requests.get(url)
+#     data = response.json()
+    
+#     if 'annualReports' in data:
+#         # 取最新年度 EPS
+#         report = data['annualReports'][0]
+#         if 'reportedEPS' in report:
+#             latest_eps = float(report['reportedEPS'])
+#             print(data)
+#             eps_data[ticker] = latest_eps
+#         else:
+#             print(f'{ticker} 年報中未找到 EPS 欄位')
+#     else:
+#         print(f'{ticker} 無法獲取 EPS 數據')
+#         print(data)
+
+# # 計算並加入 P/E ratio
+# for ticker in tickers:
+#     if ticker in eps_data:
+#         combined_data[f'{ticker}_PE_Ratio'] = combined_data[f'{ticker}_Close'] / eps_data[ticker]
+
+# # 繪製 P/E Ratio 走勢圖
+# plt.figure(figsize=(14, 7))
+# for ticker in tickers:
+#     if f'{ticker}_PE_Ratio' in combined_data.columns:
+#         plt.plot(combined_data.index, combined_data[f'{ticker}_PE_Ratio'], label=f'{ticker} P/E Ratio')
+# plt.title('股票 P/E Ratio 走勢')
+# plt.xlabel('日期')
+# plt.ylabel('P/E Ratio')
+# plt.legend()
+# plt.show()
 
 # 繪製股票價格走勢
 plt.figure(figsize=(14, 7))
