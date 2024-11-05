@@ -1,4 +1,16 @@
-# seasonal patterns
+
+# # identify trend
+# plt.figure(figsize=(14, 7))
+# for ticker in tickers:
+#     plt.plot(combined_data[f'{ticker}_30MA'], label=f'{ticker} 30日均線')
+#     plt.plot(combined_data[f'{ticker}_90MA'], label=f'{ticker} 90日均線')
+# plt.title('均線趨勢識別')
+# plt.xlabel('日期')
+# plt.ylabel('價格')
+# plt.legend()
+# plt.show()
+
+# # seasonal patterns
 # combined_data['Month'] = combined_data.index.month
 # monthly_returns = combined_data.groupby('Month')[[f'{ticker}_Returns' for ticker in tickers]].mean()
 
